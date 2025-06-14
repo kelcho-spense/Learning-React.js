@@ -1,0 +1,113 @@
+.counter-container {
+    padding: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 400px;
+    text-align: center;
+    background-color: #fafafa;
+}
+
+.counter-title {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.counter-buttons {
+    margin: 20px 0;
+}
+
+.counter-btn {
+    padding: 10px 20px;
+    margin: 0 5px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.counter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.counter-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.increment-btn {
+    background-color: #4CAF50;
+}
+
+.increment-btn:hover {
+    background-color: #45a049;
+}
+
+.decrement-btn {
+    background-color: #f44336;
+}
+
+.decrement-btn:hover {
+    background-color: #da190b;
+}
+
+.reset-btn {
+    color: white;
+    background-color: #cfcac3;
+}
+
+.reset-btn:hover {
+    background-color: #e68900;
+}
+
+.set-value-btn {
+    background-color: #9c27b0;
+}
+
+.set-value-btn:hover {
+    background-color: #7b1fa2;
+}
+
+.counter-display {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0;
+    color: #333;
+    padding: 15px;
+    background-color: #e3f2fd;
+    border-radius: 6px;
+    border: 2px solid #1976d2;
+}
+
+.counter-actions {
+    margin-top: 20px;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .counter-container {
+        margin: 10px;
+        padding: 15px;
+        max-width: 350px;
+    }
+
+    .counter-btn {
+        padding: 8px 16px;
+        margin: 5px 2px;
+        font-size: 12px;
+    }
+
+    .counter-display {
+        font-size: 20px;
+        padding: 12px;
+    }
+
+    .counter-title {
+        font-size: 20px;
+    }
+}
