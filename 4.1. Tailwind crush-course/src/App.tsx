@@ -1,5 +1,5 @@
 
-import ButtonExamples from './components/ButtonExamples'
+import ButtonExamples from './components/Buttons/ButtonExamples'
 import FlexBox from './components/flexbox/FlexBox'
 import Grid from './components/grid/Grid'
 
