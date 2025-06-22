@@ -1,9 +1,7 @@
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
 import { Role } from '../../constants/Role'
-import { useMutation } from "@tanstack/react-query"
-import { queryClient } from "../../App"
-import { createProfile } from "../../api"
+import { useCreateProfile } from "../../hooks/useProfiles"
 
 const formSchema = z.object({
     firstName: z
@@ -37,36 +35,30 @@ const validateField = <T,>(value: T, schema: z.ZodType<T>) => {
 
 function RegistrationForm() {
 
-    const registrationMutation = useMutation({
-        mutationFn: createProfile,
-        onSuccess: () => {
-            // Invalidate and refetch
-            queryClient.invalidateQueries({ queryKey: ['profiles'] });
-        }
-    })
+    const registrationMutation = useCreateProfile();
 
     const form = useForm({
         defaultValues: {
             firstName: '',
             lastName: '',
             email: '',
-            role: Role.GUEST, // Default role set to 'guest'
+            role: Role.GUEST, // Default role set to 'guest'        
         } as FormData,
         onSubmit: async ({ value }) => {
-            // Final validation before submission
-            const result = formSchema.safeParse(value)
+            const result = formSchema.safeParse(value);
             if (!result.success) {
-                console.error('Validation failed:', result.error.issues)
-                return
+                console.error('Validation failed:', result.error.issues);
+                return;
             }
 
-            // Submit the form data
-            await registrationMutation.mutateAsync(result.data)
-
-            // Reset form after successful submission
-            form.reset()
+            try {
+                await registrationMutation.mutateAsync(result.data);
+                 form.reset();
+            } catch (error) {
+                console.error('Error creating profile:', error);
+            }
         },
-    })
+    });
 
     return (
         <div className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -215,9 +207,7 @@ function RegistrationForm() {
                             )}
                         </div>
                     )}
-                />
-
-                {/* Submit Button */}
+                />                {/* Submit Button */}
                 <div className="pt-4">
                     <form.Subscribe
                         selector={(state) => [state.canSubmit, state.isSubmitting]}
@@ -230,7 +220,7 @@ function RegistrationForm() {
                                     : 'bg-gray-400 cursor-not-allowed text-gray-200'
                                     }`}
                             >
-                                {isSubmitting ? 'Submitting...' : 'Sign Up'}
+                                {isSubmitting ? 'Creating...' : 'Sign Up'}
                             </button>
                         )}
                     />
