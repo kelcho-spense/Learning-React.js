@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
+import { toast } from "sonner"
 import { Role } from '../../constants/Role'
 import { useCreateProfile } from "../../hooks/useProfiles"
 
@@ -16,8 +17,12 @@ const formSchema = z.object({
         .string()
         .email('Please enter a valid email address')
         .min(1, 'Email is required'),
+    password: z
+        .string()
+        .min(6, 'Password must be at least 6 characters')
+        .max(100, 'Password must be less than 100 characters'),
     role: z.enum([Role.STUDENT, Role.FACULTY, Role.ADMIN, Role.GUEST], {
-        errorMap: () => ({ message: 'Role must be one of the following: student, faculty, administrator' }),
+        errorMap: () => ({ message: 'Role must be one of the following: student, faculty, admin, guest' }),
     })
 })
 
@@ -37,25 +42,36 @@ function RegistrationForm() {
 
     const registrationMutation = useCreateProfile();
 
+    // // Test function to check if toast is working
+    // const testToast = () => {
+    //     toast.success('🎉 Test toast is working!');
+    //     toast.error('❌ This is an error test');
+    //     toast.info('ℹ️ This is an info test');
+    // };
+
     const form = useForm({
         defaultValues: {
             firstName: '',
             lastName: '',
             email: '',
+            password: '',
             role: Role.GUEST, // Default role set to 'guest'        
         } as FormData,
         onSubmit: async ({ value }) => {
             const result = formSchema.safeParse(value);
             if (!result.success) {
                 console.error('Validation failed:', result.error.issues);
+                toast.error('Please fix validation errors before submitting');
                 return;
             }
 
             try {
                 await registrationMutation.mutateAsync(result.data);
-                 form.reset();
+                form.reset();
+                toast.success('Profile created successfully!');
             } catch (error) {
                 console.error('Error creating profile:', error);
+                toast.error('Failed to create profile. Please try again.');
             }
         },
     });
@@ -170,8 +186,42 @@ function RegistrationForm() {
                                 </p>
                             )}
                         </div>
+                    )} />
+
+                {/* Password Field */}
+                <form.Field
+                    name="password"
+                    validators={{
+                        onChange: ({ value }) => validateField(value, formSchema.shape.password),
+                        onBlur: ({ value }) => validateField(value, formSchema.shape.password),
+                    }}
+                    children={(field) => (
+                        <div>
+                            <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-1">
+                                Password
+                            </label>
+                            <input
+                                type="password"
+                                id={field.name}
+                                name={field.name}
+                                value={field.state.value}
+                                onBlur={field.handleBlur}
+                                onChange={(e) => field.handleChange(e.target.value)}
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${field.state.meta.errors.length > 0
+                                    ? 'border-red-500 focus:ring-red-500'
+                                    : 'border-gray-300'
+                                    }`}
+                                placeholder="Enter your password"
+                            />
+                            {field.state.meta.errors.length > 0 && (
+                                <p className="mt-1 text-sm text-red-600">
+                                    {String(field.state.meta.errors[0])}
+                                </p>
+                            )}
+                        </div>
                     )}
                 />
+
                 {/* Role Selection */}
                 <form.Field
                     name="role"
@@ -207,8 +257,9 @@ function RegistrationForm() {
                             )}
                         </div>
                     )}
-                />                {/* Submit Button */}
-                <div className="pt-4">
+                />
+                {/* Submit Button */}
+                <div className="pt-4 space-y-2">
                     <form.Subscribe
                         selector={(state) => [state.canSubmit, state.isSubmitting]}
                         children={([canSubmit, isSubmitting]) => (

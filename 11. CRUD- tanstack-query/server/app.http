@@ -1,399 +1,223 @@
-@url = http://localhost:8000
+@url = http://localhost:8000/api/v1
 
 ###############################################
-# Cache
+# PROFILE CRUD OPERATIONS
 ###############################################
 
-### Set a cached value with a key and TTL (time to live)
-POST {{url}}/cache
-Content-Type: application/json
-
-{
-  "key": "example_key",
-  "value": "example_value",
-  "ttl": 30
-}
-
-### Set a cached value without TTL
-POST {{url}}/cache
-Content-Type: application/json
-
-{
-  "key": "example_key_2",
-  "value": "example_value_2"
-}
-
-### get cached value
-GET {{url}}/cache/example_key 
-
-### delete cached value
-DELETE {{url}}/cache/example_key_2
-
-
-
-
-
-
-###############################################
-# Seed
-###############################################
-POST {{url}}/seed
-
-###############################################
-# Profile Controller
-###############################################
-
-
-### Get all profiles
-GET {{url}}/profiles
-
-### Get all profiles with search
-GET {{url}}/profiles?email=john@gmail.com
-
-### Get profile by ID
-GET {{url}}/profiles/1
-
-### Create new profile
+### Create Admin User
 POST {{url}}/profiles
 Content-Type: application/json
 
 {
-  "firstName": "John2",
-  "lastName": "Doe2",
-  "email": "john2.doe@example.com",
+  "firstName": "Admin",
+  "lastName": "User",
+  "email": "admin@school.com",
+  "password": "admin123",
+  "role": "admin"
+}
+
+### Create Faculty User
+POST {{url}}/profiles
+Content-Type: application/json
+
+{
+  "firstName": "Faculty",
+  "lastName": "User",
+  "email": "faculty@school.com",
+  "password": "faculty123",
+  "role": "faculty"
+}
+
+### Create Student User
+POST {{url}}/profiles
+Content-Type: application/json
+
+{
+  "firstName": "Student",
+  "lastName": "User",
+  "email": "student@school.com",
+  "password": "student123",
   "role": "student"
 }
 
-### Update profile
+### Create Guest User
+POST {{url}}/profiles
+Content-Type: application/json
+
+{
+  "firstName": "Guest",
+  "lastName": "User",
+  "email": "guest@school.com",
+  "password": "guest123",
+  "role": "guest"
+}
+
+### Get All Profiles
+GET {{url}}/profiles
+
+### Get Profile by ID (Replace 1 with actual profile ID)
+GET {{url}}/profiles/1
+
+### Update Profile (Replace 1 with actual profile ID)
+PATCH {{url}}/profiles/1
+Content-Type: application/json
+
+{
+  "firstName": "Updated Admin",
+  "lastName": "User",
+  "email": "updated-admin@school.com",
+  "role": "admin"
+}
+
+### Update Profile - Partial Update (Only firstName)
 PATCH {{url}}/profiles/2
 Content-Type: application/json
 
 {
-  "id": 1,
-  "firstName": "John Smith",
-  "email": "updatejohn.doe@example.com"
+  "firstName": "Updated Faculty"
 }
 
-### Delete profile
-DELETE {{url}}/profiles/1
-
-###############################################
-# Students Controller
-###############################################
-
-### Get all students
-GET {{url}}/students
-
-### Get all students with search
-GET {{url}}/students?search=John
-
-### Get student by ID
-GET {{url}}/students/10
-
-### Create new student
-POST {{url}}/students
+### Update Profile - Email Only
+PATCH {{url}}/profiles/3
 Content-Type: application/json
 
 {
-  "enrollmentDate": "2025-05-27",
-  "role": "student",
-  "degreeProgram": "BSc Computer Science",
-  "gpa": 3.5,
+  "email": "new-student@school.com"
 }
 
-### Update student
-PATCH {{url}}/students/1
+### Delete Profile (Replace 4 with actual profile ID)
+DELETE {{url}}/profiles/4
+
+###############################################
+# ERROR TESTING
+###############################################
+
+### Test - Create Profile with Invalid Email
+POST {{url}}/profiles
 Content-Type: application/json
 
 {
-  "degreeProgram": "MSc Computer Science",
-  "profile": 1
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "invalid-email",
+  "password": "test123",
+  "role": "student"
 }
 
-### Delete student
-DELETE {{url}}/students/1
-
-###############################################
-# Courses Controller
-###############################################
-
-### Get all courses
-GET {{url}}/courses
-
-### Get all courses with search
-GET {{url}}/courses?search=Programming
-
-### Get course by ID
-GET {{url}}/courses/1
-
-### Create new course
-POST {{url}}/courses
+### Test - Create Profile with Duplicate Email (Use existing email)
+POST {{url}}/profiles
 Content-Type: application/json
 
 {
-  "title": "MS Software Engineering",
-  "description": "Advanced software engineering principles",
-  "departmentId": 1,
-  "credits": 3,
-  "duration": "16 weeks",
-  "startDate": "2025-05-28",
-  "endDate": "2025-09-15"
+  "firstName": "Duplicate",
+  "lastName": "User",
+  "email": "admin@school.com",
+  "password": "test123",
+  "role": "student"
 }
 
-### Update course
-PATCH {{url}}/courses/1
+### Test - Create Profile with Short Password
+POST {{url}}/profiles
 Content-Type: application/json
 
 {
-  "title": "Advanced Web Programming",
-  "credits": 4,
-  "description": "Advanced topics in web development",
-  "duration": "14 weeks",
-  "departmentId": 1,
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "test@school.com",
+  "password": "123",
+  "role": "student"
 }
 
-### Delete course
-DELETE {{url}}/courses/1
-
-###############################################
-# Departments Controller
-###############################################
-
-### Get all departments
-GET {{url}}/departments
-
-### Get all departments with search
-GET {{url}}/departments?search=Science
-
-### Get department by ID
-GET {{url}}/departments/1
-
-### Create new department
-POST {{url}}/departments
+### Test - Create Profile with Invalid Role
+POST {{url}}/profiles
 Content-Type: application/json
 
 {
-  "name": "Maths and Computer Science",
-  "description": "Department of Maths and Computer Science and Engineering"
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "test2@school.com",
+  "password": "test123",
+  "role": "invalid-role"
 }
 
-### Update department
-PATCH {{url}}/departments/1
+### Test - Update Profile with Invalid Email Format
+PATCH {{url}}/profiles/1
 Content-Type: application/json
 
 {
-  "name": "Computer Science & Engineering",
-  "description": "Updated department description",
-  "headOfDepartment": "Dr. Robert Johnson"
+  "email": "invalid-email-format"
 }
 
-### Delete department
-DELETE {{url}}/departments/1
+### Test - Get Non-existent Profile
+GET {{url}}/profiles/999
 
-###############################################
-# Lectures Controller
-###############################################
-
-### Get all lectures
-GET {{url}}/lectures
-
-### Get all lectures with search
-GET {{url}}/lectures?search=Math
-
-### Get lecture by ID
-GET {{url}}/lectures/1
-
-### Create new lecture
-POST {{url}}/lectures
+### Test - Update Non-existent Profile
+PATCH {{url}}/profiles/999
 Content-Type: application/json
 
 {
-  "title": "Introduction to Math",
-  "description": "Basic mathematical concepts",
-  "courseId": 1,
-  "duration": 90,
-  "lectureDate": "2025-05-28",
-  "materials": "https://example.com/lecture-slides"
+  "firstName": "Non-existent"
 }
 
-### Update lecture
-PATCH {{url}}/lectures/1
+### Test - Delete Non-existent Profile
+DELETE {{url}}/profiles/999
+
+### Test - Update Profile with Duplicate Email
+PATCH {{url}}/profiles/1
 Content-Type: application/json
 
 {
-  "title": "Advanced Mathematics",
-  "duration": 120,
-  "description": "Advanced topics in calculus and linear algebra",
-  "materials": "https://example.com/advanced-math-slides"
+  "email": "faculty@school.com"
 }
 
-### Delete lecture
-DELETE {{url}}/lectures/1
-
 ###############################################
-# Course Enrollment - Many-to-Many Relationship Tests
+# BULK OPERATIONS FOR TESTING
 ###############################################
 
-### Create a profile for testing
+### Create Multiple Test Profiles
+POST {{url}}/profiles
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@school.com",
+  "password": "password123",
+  "role": "student"
+}
+
+###
 POST {{url}}/profiles
 Content-Type: application/json
 
 {
   "firstName": "Jane",
   "lastName": "Smith",
-  "email": "jane.smith@example.com",
-  "role": "student"
+  "email": "jane.smith@school.com",
+  "password": "password123",
+  "role": "faculty"
 }
 
-### Create a student linked to the profile
-POST {{url}}/students
-Content-Type: application/json
-
-{
-  "enrollmentDate": "2025-01-15",
-  "degreeProgram": "MSc Computer Science",
-  "gpa": 3.8,
-  "profileId": 4
-}
-
-### Create a department for testing
-POST {{url}}/departments
-Content-Type: application/json
-
-{
-  "name": "Computer Science",
-  "description": "Department of Computer Science and Engineering"
-}
-
-### Create courses for testing
-POST {{url}}/courses
-Content-Type: application/json
-
-{
-  "title": "Introduction to Programming",
-  "description": "Fundamentals of programming concepts",
-  "departmentId": 3,
-  "credits": 3,
-  "duration": "16 weeks",
-  "startDate": "2025-06-01",
-  "endDate": "2025-09-30"
-}
-
-### Create another course
-POST {{url}}/courses
-Content-Type: application/json
-
-{
-  "title": "Advanced Algorithms",
-  "description": "Study of complex algorithms and data structures",
-  "departmentId": 3,
-  "credits": 4,
-  "duration": "16 weeks",
-  "startDate": "2025-06-01", 
-  "endDate": "2025-09-30"
-}
-
-### Get all students
-GET {{url}}/students
-
-### Get all courses
-GET {{url}}/courses
-
-### Enroll a student in a course (student id = 1, course id = 1)
-POST {{url}}/students/1/courses/1
-
-### Enroll a student in another course (student id = 1, course id = 2)
-POST {{url}}/students/1/courses/2
-
-### Get all courses for a student
-GET {{url}}/students/1/courses
-
-### Get all students enrolled in a course
-GET {{url}}/courses/1/students
-
-### Unenroll a student from a course
-DELETE {{url}}/students/1/courses/2
-
-### Alternative: Add a student to a course from the course endpoint
-POST {{url}}/courses/2/students/1
-
-### Alternative: Remove a student from a course from the course endpoint
-DELETE {{url}}/courses/2/students/1
-
-###############################################
-# Additional Many-to-Many Test Cases
-###############################################
-
-### Create multiple students for batch testing
+###
 POST {{url}}/profiles
 Content-Type: application/json
 
 {
-  "firstName": "Alex",
+  "firstName": "Bob",
   "lastName": "Johnson",
-  "email": "alex.johnson@example.com",
+  "email": "bob.johnson@school.com",
+  "password": "password123",
   "role": "student"
 }
 
-### Create student linked to profile
-POST {{url}}/students
-Content-Type: application/json
-
-{
-  "enrollmentDate": "2025-02-10",
-  "degreeProgram": "BSc Computer Science",
-  "gpa": 3.6,
-  "profileId": 2
-}
-
-### Create another profile
+###
 POST {{url}}/profiles
 Content-Type: application/json
 
 {
-  "firstName": "Maria",
-  "lastName": "Rodriguez",
-  "email": "maria.rodriguez@example.com",
-  "role": "student"
+  "firstName": "Alice",
+  "lastName": "Williams",
+  "email": "alice.williams@school.com",
+  "password": "password123",
+  "role": "admin"
 }
-
-### Create student linked to profile
-POST {{url}}/students
-Content-Type: application/json
-
-{
-  "enrollmentDate": "2025-01-20",
-  "degreeProgram": "MSc Data Science",
-  "gpa": 3.9,
-  "profileId": 3
-}
-
-### Create another course for testing multiple enrollments
-POST {{url}}/courses
-Content-Type: application/json
-
-{
-  "title": "Database Systems",
-  "description": "Principles of database design and implementation",
-  "departmentId": 1,
-  "credits": 4,
-  "duration": "16 weeks",
-  "startDate": "2025-06-01", 
-  "endDate": "2025-09-30"
-}
-
-### Batch enroll multiple students in the same course
-POST {{url}}/students/2/courses/3
-###
-POST {{url}}/students/3/courses/3
-
-### Batch enroll one student in multiple courses
-POST {{url}}/students/3/courses/1
-###
-POST {{url}}/students/3/courses/2
-
-### Get all students enrolled in a specific course
-GET {{url}}/courses/3/students
-
-### Get all courses for a specific student
-GET {{url}}/students/3/courses

@@ -1,9 +1,11 @@
 import Profile from "./components/profiles/Profile"
+import ToasterProvider from "./components/ToasterProvider"
 
 function App() {
   return (
-    // <Profile />
     <>
+      <Profile />
+      <ToasterProvider />
     </>
   )
 }

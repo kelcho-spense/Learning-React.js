@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
+import { toast } from "sonner";
 import { Role } from '../../constants/Role';
 import { useUpdateProfile } from "../../hooks/useProfiles";
 import type { Profile } from "./interface";
@@ -46,26 +47,28 @@ function EditProfileModal({ profile, onClose }: EditProfileModalProps) {
             lastName: profile.lastName,
             email: profile.email,
             role: profile.role as Role,
-        } as FormData,
-        onSubmit: async ({ value }) => {
+        } as FormData, onSubmit: async ({ value }) => {
             // Final validation before submission
             const result = formSchema.safeParse(value);
             if (!result.success) {
                 console.error('Validation failed:', result.error.issues);
+                toast.error('Please fix validation errors before submitting');
                 return;
             }
 
             try {
                 // Submit the form data with the profile ID
                 await updateMutation.mutateAsync({
-                    id: profile.id,
+                    id: profile.id.toString(),
                     ...result.data,
                 });
 
                 // Close modal after successful submission
                 onClose();
+                toast.success('Profile updated successfully!');
             } catch (error) {
                 console.error('Error updating profile:', error);
+                toast.error('Failed to update profile. Please try again.');
             }
         },
     });

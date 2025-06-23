@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  Relation,
-} from 'typeorm';
-import { Student } from '../../students/entities/student.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 export enum Role {
   STUDENT = 'student',
@@ -25,8 +18,11 @@ export class Profile {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
+
+  @Column()
+  password: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.GUEST })
   role: Role;
@@ -40,7 +36,4 @@ export class Profile {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
-
-  @OneToOne(() => Student, (student) => student.profile)
-  student: Relation<Student>;
 }

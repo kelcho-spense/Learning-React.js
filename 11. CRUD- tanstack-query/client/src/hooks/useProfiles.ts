@@ -18,16 +18,16 @@ import type { UpdateProfileData } from '../api';
 import type { Profile } from '../components/profiles/interface';
 import type { FormData } from '../components/profiles/RegistrationForm';
 
-// Simple query keys
-export const profileKeys = {
-    all: ['profiles'] as const,
-    detail: (id: string) => ['profiles', id] as const,
-} as const;
+// // Simple query keys
+// export const profileKeys = {
+//     all: ['profiles'] as const,
+//     detail: (id: string) => ['profiles', id] as const,
+// } as const;
 
 // Custom hook for fetching all profiles
 export const useProfiles = (): UseQueryResult<Profile[], Error> => {
     return useQuery({
-        queryKey: profileKeys.all,
+        queryKey: ['profiles'],
         queryFn: getProfiles,
     });
 };
@@ -35,7 +35,7 @@ export const useProfiles = (): UseQueryResult<Profile[], Error> => {
 // Custom hook for fetching a single profile
 export const useProfile = (id: string): UseQueryResult<Profile, Error> => {
     return useQuery({
-        queryKey: profileKeys.detail(id),
+        queryKey: ['profiles', id],
         queryFn: () => getProfile(id),
         enabled: !!id,
     });
@@ -46,10 +46,11 @@ export const useCreateProfile = (): UseMutationResult<Profile, Error, FormData> 
     const queryClient = useQueryClient();
 
     return useMutation({
+        mutationKey: ['createProfile'],
         mutationFn: createProfile,
         onSuccess: () => {
             // Just invalidate - let React Query handle the rest
-            queryClient.invalidateQueries({ queryKey: profileKeys.all });
+            queryClient.invalidateQueries({ queryKey: ['profiles'], exact: true});
         },
     });
 };
@@ -59,10 +60,11 @@ export const useUpdateProfile = (): UseMutationResult<Profile, Error, UpdateProf
     const queryClient = useQueryClient();
 
     return useMutation({
+        mutationKey: ['updateProfile'],
         mutationFn: updateProfile,
         onSuccess: () => {
             // Just invalidate - let React Query handle the rest
-            queryClient.invalidateQueries({ queryKey: profileKeys.all });
+            queryClient.invalidateQueries({ queryKey: ['profiles'], exact: true});
         },
     });
 };
@@ -72,10 +74,11 @@ export const useDeleteProfile = (): UseMutationResult<void, Error, string> => {
     const queryClient = useQueryClient();
 
     return useMutation({
+        mutationKey: ['deleteProfile'],
         mutationFn: deleteProfile,
         onSuccess: () => {
             // Just invalidate - let React Query handle the rest
-            queryClient.invalidateQueries({ queryKey: profileKeys.all });
+            queryClient.invalidateQueries({ queryKey: ['profiles'], exact: true});
         },
     });
 };

@@ -1,330 +1,98 @@
-# School Management
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+</p>
 
-Please check the: [API Design](./API%20Design.md)
+[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
+[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-## API Caching with Redis
+  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+    <p align="center">
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
+<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
+<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
+<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
+<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
+  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
+    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
+  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+</p>
+  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
+  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-This project demonstrates API caching implementation using Redis to improve application performance and reduce database load.
+## Description
 
-### What is API Caching?
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-API caching is a technique that stores frequently requested data in a high-speed data storage layer (Redis) to reduce response times and minimize expensive database operations.
-
-### Benefits of API Caching
-
-1. **Improved Performance**: Significantly faster response times for cached data
-2. **Reduced Database Load**: Fewer database queries reduce server strain
-3. **Better Scalability**: Handle more concurrent users with same resources
-4. **Cost Optimization**: Reduced computational resources and database costs
-5. **Enhanced User Experience**: Faster page loads and API responses
-6. **Reliability**: Fallback mechanism when database is temporarily unavailable
-
-### Caching Architecture
-
-```
-Client Request → NestJS App → Cache Check → Redis Cache
-                     ↓              ↓
-                 Database    ←  Cache Miss
-                     ↓
-                Cache Store → Redis Cache
-```
-
-## Global Caching Setup
-
-### 1. Dependencies Installation
+## Project setup
 
 ```bash
-npm install @nestjs/cache-manager cache-manager @keyv/redis cacheable
+$ pnpm install
 ```
 
-### 2. Environment Configuration
-
-Add Redis configuration to your `.env` file:
-
-```env
-# Redis configuration
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=your_redis_password
-REDIS_USERNAME=username
-
-# Redis URL format
-REDIS_URL=redis://username:your_redis_password@localhost:6379
-```
-
-### 3. Global Cache Module Setup
-
-Configure cache module globally in `app.module.ts`:
-
-```typescript
-import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
-import { createKeyv, Keyv } from '@keyv/redis';
-import { CacheableMemory } from 'cacheable';
-
-@Module({
-  imports: [
-    // Global cache configuration
-    CacheModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      isGlobal: true, // Makes cache available globally
-      useFactory: (configService: ConfigService) => {
-        return {
-          stores: [
-            // Memory cache for fast local access
-            new Keyv({
-              store: new CacheableMemory({ ttl: 30000, lruSize: 5000 }),
-            }),
-            // Redis cache for persistent storage
-            createKeyv(configService.getOrThrow<string>('REDIS_URL')),
-          ],
-        };
-      },
-    }),
-  ],
-  providers: [
-    {
-      provide: 'APP_INTERCEPTOR',
-      useClass: CacheInterceptor, // Global cache interceptor
-    },
-  ],
-})
-export class AppModule {}
-```
-
-### 4. Docker Redis Setup
-
-Start Redis using Docker Compose:
-
-```yaml
-redis:
-  image: redis:8.0-alpine
-  container_name: redis-cache
-  restart: unless-stopped
-  command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
-  ports:
-    - "6379:6379"
-  volumes:
-    - redis-data:/data
-  networks:
-    - app-network
-```
-
-## Cache Implementation Strategies
-
-### 1. Automatic Caching with Interceptors
-
-Use `@UseInterceptors(CacheInterceptor)` on controllers or methods:
-
-```typescript
-@Controller('students')
-@UseInterceptors(CacheInterceptor)
-export class StudentsController {
-  @Get()
-  @CacheTTL(60) // Cache for 60 seconds
-  findAll() {
-    return this.studentsService.findAll();
-  }
-}
-```
-
-### 2. Manual Cache Operations
-
-Inject `CACHE_MANAGER` for custom cache operations:
-
-```typescript
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-
-@Injectable()
-export class CacheMeService {
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
-
-  async set(key: string, value: any, ttl?: number) {
-    await this.cacheManager.set(key, value, ttl);
-  }
-
-  async get(key: string) {
-    return await this.cacheManager.get(key);
-  }
-
-  async delete(key: string) {
-    await this.cacheManager.del(key);
-  }
-}
-```
-
-## Testing Cache Operations
-
-### Using the Cache-Me Resource
-
-This project includes a dedicated `/cache` endpoint for testing cache operations:
-
-#### 1. Set Cache Entry
-
-```http
-POST http://localhost:8000/cache
-Content-Type: application/json
-
-{
-  "key": "user_123",
-  "value": "John Doe Profile Data",
-  "ttl": 300
-}
-```
-
-#### 2. Get Cache Entry
-
-```http
-GET http://localhost:8000/cache/user_123
-```
-
-#### 3. Delete Cache Entry
-
-```http
-DELETE http://localhost:8000/cache/user_123
-```
-
-### Testing with Real APIs
-
-Test caching on existing endpoints:
-
-```http
-# First request - hits database (slower)
-GET http://localhost:8000/students
-
-# Second request - hits cache (faster)
-GET http://localhost:8000/students
-```
-
-### Cache Headers Verification
-
-Check response headers to verify caching:
-
-```
-X-Cache: HIT    # Response from cache
-X-Cache: MISS   # Response from database
-Cache-Control: max-age=60
-```
-
-## Cache Strategies
-
-### 1. Cache-Aside (Lazy Loading)
-
-```typescript
-async findStudent(id: number) {
-  const cacheKey = `student:${id}`;
-  
-  // Try cache first
-  let student = await this.cacheManager.get(cacheKey);
-  
-  if (!student) {
-    // Cache miss - fetch from database
-    student = await this.studentRepository.findOne({ where: { id } });
-    
-    // Store in cache
-    await this.cacheManager.set(cacheKey, student, 300);
-  }
-  
-  return student;
-}
-```
-
-### 2. Write-Through Cache
-
-```typescript
-async createStudent(data: CreateStudentDto) {
-  // Save to database
-  const student = await this.studentRepository.save(data);
-  
-  // Immediately cache the new data
-  const cacheKey = `student:${student.id}`;
-  await this.cacheManager.set(cacheKey, student, 300);
-  
-  return student;
-}
-```
-
-### 3. Cache Invalidation
-
-```typescript
-async updateStudent(id: number, data: UpdateStudentDto) {
-  // Update database
-  const student = await this.studentRepository.update(id, data);
-  
-  // Invalidate cache
-  await this.cacheManager.del(`student:${id}`);
-  await this.cacheManager.del('students:all');
-  
-  return student;
-}
-```
-
-## Best Practices
-
-1. **Set Appropriate TTL**: Balance between data freshness and performance
-2. **Cache Key Naming**: Use descriptive, hierarchical keys (`user:123`, `posts:user:123`)
-3. **Cache Invalidation**: Clear related cache entries on data updates
-4. **Monitor Cache Hit Ratio**: Aim for 80%+ hit rate
-5. **Handle Cache Failures**: Always have fallback to database
-6. **Use Cache Layers**: Memory + Redis for optimal performance
-7. **Avoid Caching Sensitive Data**: Never cache passwords or personal information
-
-## Monitoring and Debugging
-
-### 1. Enable Debug Logging
-
-```typescript
-// In app.module.ts
-CacheModule.registerAsync({
-  useFactory: () => ({
-    // ... other config
-    logger: true, // Enable cache logging
-  }),
-})
-```
-
-### 2. Cache Metrics
-
-Monitor cache performance:
-- Hit ratio
-- Response times
-- Memory usage
-- Cache size
-
-### 3. Redis CLI Commands
+## Compile and run the project
 
 ```bash
-# Connect to Redis
-redis-cli -h localhost -p 6379 -a your_redis_password
+# development
+$ pnpm run start
 
-# Check all keys
-KEYS *
+# watch mode
+$ pnpm run start:dev
 
-# Get cache entry
-GET "cache:student:123"
-
-# Check TTL
-TTL "cache:student:123"
-
-# Clear all cache
-FLUSHALL
+# production mode
+$ pnpm run start:prod
 ```
 
-## Getting Started
+## Run tests
 
-1. **Start Redis**: `docker-compose up -d redis`
-2. **Install Dependencies**: `npm install`
-3. **Run Application**: `npm run start:dev`
-4. **Test Caching**: Use the `/cache` endpoints in `app.http`
-5. **Monitor Performance**: Check response times before/after caching
+```bash
+# unit tests
+$ pnpm run test
 
-## Cache Configuration Options
+# e2e tests
+$ pnpm run test:e2e
 
-```typescript
-CacheModule.register({
-  ttl: 60,          // Default TTL in seconds
-  max: 100,         // Maximum number of items in cache
-  isGlobal: true,   // Make cache available globally
-})
+# test coverage
+$ pnpm run test:cov
 ```
+
+## Deployment
+
+When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+
+If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+
+```bash
+$ pnpm install -g @nestjs/mau
+$ mau deploy
+```
+
+With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+
+## Resources
+
+Check out a few resources that may come in handy when working with NestJS:
+
+- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
+- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
+- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
+- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
+- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
+- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
+- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
+- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+
+## Support
+
+Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+
+## Stay in touch
+
+- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
+- Website - [https://nestjs.com](https://nestjs.com/)
+- Twitter - [@nestframework](https://twitter.com/nestframework)
+
+## License
+
+Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

@@ -3,6 +3,7 @@ import Loaders from "../../constants/Loaders";
 import { MdDeleteForever, MdEdit } from "react-icons/md";
 import { useProfiles, useDeleteProfile } from "../../hooks/useProfiles";
 import { useState } from "react";
+import { toast } from "sonner";
 import EditProfileModal from "./EditProfileModal";
 
 function ProfileLists() {
@@ -14,19 +15,28 @@ function ProfileLists() {
   // Use custom hook for deleting profiles
   const deleteMutation = useDeleteProfile();
 
-  const handleDelete = async (id: string) => {    
-      try {
-        await deleteMutation.mutateAsync(id);
-        console.log(`Profile ${id} deleted successfully`);
-      } catch (error) {
-        console.error('Error deleting profile:', error);
+  // Show error toast when there's an error fetching profiles
+  if (isError && error) {
+    toast.error(`Failed to load profiles: ${error.message}`);
+  }
+  const handleDelete = async (id: number) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this profile?');
+    if (!confirmDelete) return;
+
+    try {
+      await deleteMutation.mutateAsync(id.toString());
+      console.log(`Profile ${id} deleted successfully`);
+      toast.success('Profile deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting profile:', error);
+      toast.error('Failed to delete profile. Please try again.');
     }
   };
 
-  const handleEdit = (profile: Profile) =>  setEditingProfile(profile);
+  const handleEdit = (profile: Profile) => setEditingProfile(profile);
 
-  const handleCloseModal = () =>  setEditingProfile(null);
-  
+  const handleCloseModal = () => setEditingProfile(null);
+
   return (
     <div className="bg-white shadow-md rounded-lg min-w-auto">
       <h3 className="text-2xl text-blue-400 m-2">ProfileLists</h3>

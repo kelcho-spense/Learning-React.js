@@ -1,24 +1,31 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { AllExceptionsFilter } from './http-exception.filter';
-import helmet from 'helmet';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable Helmet for security
-  app.use(helmet());
   // Enable CORS
   app.enableCors({
-    origin: 'http://localhost:5173', // Adjust this to your needs
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Accept, Authorization',
+    origin: ['http://localhost:5173', 'http://localhost:3000'], // React dev server ports
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
 
-  app.useGlobalPipes(new ValidationPipe());
+  // Set global prefix for API routes
+  app.setGlobalPrefix('api/v1');
+
+  // Enable global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   // Register the global exception filter
@@ -27,6 +34,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const PORT = configService.getOrThrow<number>('PORT');
 
+  console.log(`🚀 Server is running on http://localhost:${PORT}/api/v1`);
   await app.listen(PORT);
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('❌ Error starting server:', err);
+  process.exit(1);
+});

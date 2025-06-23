@@ -1,10 +1,16 @@
 import type { FormData } from '../components/profiles/RegistrationForm';
 import type { Profile } from '../components/profiles/interface';
 
-const url = 'http://localhost:8000';
+const url = 'http://localhost:8000/api/v1';
 
-// Type for update operations (FormData + id)
-export type UpdateProfileData = FormData & { id: string };
+// Type for update operations (FormData without password + id)
+export type UpdateProfileData = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: 'student' | 'faculty' | 'admin' | 'guest';
+};
 
 // Helper function to handle API responses and errors
 const handleApiResponse = async (response: Response) => {
@@ -50,7 +56,8 @@ export const getProfile = async (id: string): Promise<Profile> => {
 
 // CREATE new profile
 export const createProfile = async (profileData: FormData): Promise<Profile> => {
-  const response = await fetch(`${url}/profiles`, {
+  // delay 
+ const response = await fetch(`${url}/profiles`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
