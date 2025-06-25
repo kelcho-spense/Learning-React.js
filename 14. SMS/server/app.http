@@ -1,0 +1,216 @@
+@url = http://localhost:8000/api/v1
+
+###############################################
+# RBAC AUTHORIZATION
+###############################################
+### Create Test Users
+### Create Admin User
+POST {{url}}/profiles
+Content-Type: application/json
+
+{
+  "firstName": "Admin",
+  "lastName": "User",
+  "email": "admin@school.com",
+  "password": "admin123",
+  "role": "admin"
+}
+
+##### Create Faculty User
+POST {{url}}/profiles
+Content-Type: application/json
+
+{
+  "firstName": "Faculty",
+  "lastName": "User",
+  "email": "faculty@school.com",
+  "password": "faculty123",
+  "role": "faculty"
+}
+
+##### Create Student User
+POST {{url}}/profiles
+Content-Type: application/json
+
+{
+  "firstName": "Student",
+  "lastName": "User",
+  "email": "student@school.com",
+  "password": "student123",
+  "role": "student"
+}
+
+##### Get Authentication Tokens
+##### Get Admin Token
+POST {{url}}/auth/signin
+Content-Type: application/json
+
+{
+  "email": "admin@school.com",
+  "password": "admin123"
+}
+
+##### Get Faculty Token
+POST {{url}}/auth/signin
+Content-Type: application/json
+
+{
+  "email": "faculty@school.com",
+  "password": "faculty123"
+}
+
+##### Get Student Token
+POST {{url}}/auth/signin
+Content-Type: application/json
+
+{
+  "email": "student@school.com",
+  "password": "student123"
+}
+
+#################################################
+# Test Cases
+###############################################
+# Store the tokens for later use
+# Replace these with the actual tokens received from the sign-in responses
+@admin_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5Ac2Nob29sLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0OTMzODUzMCwiZXhwIjoxNzQ5MzM5NDMwfQ.a47y-cS5CJDlp56h8jvB_yf3NXKEf3O0jHoUz7RQEWs
+@faculty_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZmFjdWx0eUBzY2hvb2wuY29tIiwicm9sZSI6ImZhY3VsdHkiLCJpYXQiOjE3NDkzMjUxMzIsImV4cCI6MTc0OTMyNjAzMn0.zSpjpnqi8xlhrdjMWroHHt9Oah7ntAlEShkZ-Wx51yY
+@student_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoic3R1ZGVudEBzY2hvb2wuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3NDkzMzY2NTUsImV4cCI6MTc0OTMzNzU1NX0.3RPlmaebdq3WGSUNs5m2hIBI4EQmMI-IfPAH8IbZQPU
+
+# Use admin token for any role that can access all endpoints
+@any_token = {{student_token}} 
+
+###Admin can view all profiles
+GET {{url}}/profiles
+Authorization: Bearer {{admin_token}}
+
+###Faculty can view all profiles
+GET {{url}}/profiles
+Authorization: Bearer {{faculty_token}}
+
+### Student cannot view all profiles (should return 403)
+GET {{url}}/profiles
+Authorization: Bearer {{student_token}}
+
+###  All roles can view individual profile
+GET {{url}}/profiles/1
+Authorization: Bearer {{any_token}}
+
+### Only Admin can delete profiles (others should return 403)
+DELETE {{url}}/profiles/1
+Authorization: Bearer {{student_token}}
+#################################################################
+## Test Student Management
+#################################################################
+
+### Admin can create students
+POST {{url}}/students
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+  "profileId": 1,
+  "studentId": "STU001",
+  "year": 1,
+  "enrollmentDate" : "2023-09-01"
+}
+
+###  Faculty can create students
+POST {{url}}/students
+Authorization: Bearer {{faculty_token}}
+Content-Type: application/json
+
+{
+  "profileId": 2,
+  "studentId": "STU002",
+  "year": 2,
+  "enrollmentDate" : "2023-09-01"
+}
+
+###  Student cannot create students (should return 403)
+POST {{url}}/students
+Authorization: Bearer {{student_token}}
+Content-Type: application/json
+
+{
+  "profileId": 3,
+  "studentId": "STU003",
+  "year": 1,
+  "enrollmentDate" : "2023-09-01"
+}
+###############################################################
+## Test Course Management
+###############################################################
+
+### Admin can create courses
+POST {{url}}/courses
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+  "name": "Advanced Mathematics",
+  "code": "MATH301",
+  "credits": 3,
+  "departmentId": 1
+}
+
+### Faculty can create courses
+POST {{url}}/courses
+Authorization: Bearer {{faculty_token}}
+Content-Type: application/json
+
+{
+  "name": "Computer Science Basics",
+  "code": "CS101",
+  "credits": 4,
+  "departmentId": 1
+}
+
+### Student cannot create courses (should return 403)
+POST {{url}}/courses
+Authorization: Bearer {{student_token}}
+Content-Type: application/json
+
+{
+  "name": "Test Course",
+  "code": "TEST101",
+  "credits": 2,
+  "departmentId": 1
+}
+
+### All roles can view courses
+GET {{url}}/courses
+Authorization: Bearer {{any_token}}
+
+###########################################################
+## Test Department Management
+###########################################################
+### Admin can create departments
+POST {{url}}/departments
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+  "name": "Computer Science",
+  "code": "CS"
+}
+
+###  Faculty can create departments
+POST {{url}}/departments
+Authorization: Bearer {{faculty_token}}
+Content-Type: application/json
+
+{
+  "name": "Mathematics",
+  "code": "MATH"
+}
+
+### Student cannot create departments (should return 403)
+POST {{url}}/departments
+Authorization: Bearer {student_token}
+Content-Type: application/json
+
+{
+  "name": "Test Department",
+  "code": "TEST"
+}
