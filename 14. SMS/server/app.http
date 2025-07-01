@@ -16,7 +16,7 @@ Content-Type: application/json
   "role": "admin"
 }
 
-##### Create Faculty User
+##### Create User
 POST {{url}}/profiles
 Content-Type: application/json
 
@@ -25,19 +25,7 @@ Content-Type: application/json
   "lastName": "User",
   "email": "faculty@school.com",
   "password": "faculty123",
-  "role": "faculty"
-}
-
-##### Create Student User
-POST {{url}}/profiles
-Content-Type: application/json
-
-{
-  "firstName": "Student",
-  "lastName": "User",
-  "email": "student@school.com",
-  "password": "student123",
-  "role": "student"
+  "role": "user"
 }
 
 ##### Get Authentication Tokens

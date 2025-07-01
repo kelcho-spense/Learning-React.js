@@ -88,7 +88,11 @@ export class CommentsService {
     }
 
     // Check if user can update this comment
-    if (userRole !== Role.ADMIN && comment.authorId !== userId) {
+    if (
+      userRole !== Role.ADMIN &&
+      userRole !== Role.SUPER_ADMIN &&
+      comment.authorId !== userId
+    ) {
       throw new ForbiddenException('You can only update your own comments');
     }
 
@@ -104,7 +108,11 @@ export class CommentsService {
     }
 
     // Check if user can delete this comment
-    if (userRole !== Role.ADMIN && comment.authorId !== userId) {
+    if (
+      userRole !== Role.ADMIN &&
+      userRole !== Role.SUPER_ADMIN &&
+      comment.authorId !== userId
+    ) {
       throw new ForbiddenException('You can only delete your own comments');
     }
 

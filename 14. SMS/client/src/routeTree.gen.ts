@@ -12,11 +12,20 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WriteRouteImport } from './routes/write'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FeaturesRouteImport } from './routes/features'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as BlogsRouteImport } from './routes/blogs'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
+import { Route as DashboardMeRouteImport } from './routes/dashboard/me'
+import { Route as DashboardDraftsRouteImport } from './routes/dashboard/drafts'
+import { Route as DashboardCategoriesRouteImport } from './routes/dashboard/categories'
+import { Route as DashboardBlogsRouteImport } from './routes/dashboard/blogs'
+import { Route as DashboardAdminDashboardRouteImport } from './routes/dashboard/admin-dashboard'
+import { Route as DashboardAdminAccountsRouteImport } from './routes/dashboard/admin-accounts'
 import { Route as BlogPostIdRouteImport } from './routes/blog.$postId'
 
 const WriteRoute = WriteRouteImport.update({
@@ -32,6 +41,11 @@ const LoginRoute = LoginRouteImport.update({
 const FeaturesRoute = FeaturesRouteImport.update({
   id: '/features',
   path: '/features',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -59,6 +73,46 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardUsersRoute = DashboardUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardMeRoute = DashboardMeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardDraftsRoute = DashboardDraftsRouteImport.update({
+  id: '/drafts',
+  path: '/drafts',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardCategoriesRoute = DashboardCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardBlogsRoute = DashboardBlogsRouteImport.update({
+  id: '/blogs',
+  path: '/blogs',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAdminDashboardRoute = DashboardAdminDashboardRouteImport.update({
+  id: '/admin-dashboard',
+  path: '/admin-dashboard',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAdminAccountsRoute = DashboardAdminAccountsRouteImport.update({
+  id: '/admin-accounts',
+  path: '/admin-accounts',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const BlogPostIdRoute = BlogPostIdRouteImport.update({
   id: '/blog/$postId',
   path: '/blog/$postId',
@@ -71,10 +125,19 @@ export interface FileRoutesByFullPath {
   '/blogs': typeof BlogsRoute
   '/categories': typeof CategoriesRoute
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/features': typeof FeaturesRoute
   '/login': typeof LoginRoute
   '/write': typeof WriteRoute
   '/blog/$postId': typeof BlogPostIdRoute
+  '/dashboard/admin-accounts': typeof DashboardAdminAccountsRoute
+  '/dashboard/admin-dashboard': typeof DashboardAdminDashboardRoute
+  '/dashboard/blogs': typeof DashboardBlogsRoute
+  '/dashboard/categories': typeof DashboardCategoriesRoute
+  '/dashboard/drafts': typeof DashboardDraftsRoute
+  '/dashboard/me': typeof DashboardMeRoute
+  '/dashboard/users': typeof DashboardUsersRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +149,14 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/write': typeof WriteRoute
   '/blog/$postId': typeof BlogPostIdRoute
+  '/dashboard/admin-accounts': typeof DashboardAdminAccountsRoute
+  '/dashboard/admin-dashboard': typeof DashboardAdminDashboardRoute
+  '/dashboard/blogs': typeof DashboardBlogsRoute
+  '/dashboard/categories': typeof DashboardCategoriesRoute
+  '/dashboard/drafts': typeof DashboardDraftsRoute
+  '/dashboard/me': typeof DashboardMeRoute
+  '/dashboard/users': typeof DashboardUsersRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -94,10 +165,19 @@ export interface FileRoutesById {
   '/blogs': typeof BlogsRoute
   '/categories': typeof CategoriesRoute
   '/contact': typeof ContactRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/features': typeof FeaturesRoute
   '/login': typeof LoginRoute
   '/write': typeof WriteRoute
   '/blog/$postId': typeof BlogPostIdRoute
+  '/dashboard/admin-accounts': typeof DashboardAdminAccountsRoute
+  '/dashboard/admin-dashboard': typeof DashboardAdminDashboardRoute
+  '/dashboard/blogs': typeof DashboardBlogsRoute
+  '/dashboard/categories': typeof DashboardCategoriesRoute
+  '/dashboard/drafts': typeof DashboardDraftsRoute
+  '/dashboard/me': typeof DashboardMeRoute
+  '/dashboard/users': typeof DashboardUsersRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,10 +187,19 @@ export interface FileRouteTypes {
     | '/blogs'
     | '/categories'
     | '/contact'
+    | '/dashboard'
     | '/features'
     | '/login'
     | '/write'
     | '/blog/$postId'
+    | '/dashboard/admin-accounts'
+    | '/dashboard/admin-dashboard'
+    | '/dashboard/blogs'
+    | '/dashboard/categories'
+    | '/dashboard/drafts'
+    | '/dashboard/me'
+    | '/dashboard/users'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +211,14 @@ export interface FileRouteTypes {
     | '/login'
     | '/write'
     | '/blog/$postId'
+    | '/dashboard/admin-accounts'
+    | '/dashboard/admin-dashboard'
+    | '/dashboard/blogs'
+    | '/dashboard/categories'
+    | '/dashboard/drafts'
+    | '/dashboard/me'
+    | '/dashboard/users'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
@@ -129,10 +226,19 @@ export interface FileRouteTypes {
     | '/blogs'
     | '/categories'
     | '/contact'
+    | '/dashboard'
     | '/features'
     | '/login'
     | '/write'
     | '/blog/$postId'
+    | '/dashboard/admin-accounts'
+    | '/dashboard/admin-dashboard'
+    | '/dashboard/blogs'
+    | '/dashboard/categories'
+    | '/dashboard/drafts'
+    | '/dashboard/me'
+    | '/dashboard/users'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -141,6 +247,7 @@ export interface RootRouteChildren {
   BlogsRoute: typeof BlogsRoute
   CategoriesRoute: typeof CategoriesRoute
   ContactRoute: typeof ContactRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   FeaturesRoute: typeof FeaturesRoute
   LoginRoute: typeof LoginRoute
   WriteRoute: typeof WriteRoute
@@ -168,6 +275,13 @@ declare module '@tanstack/react-router' {
       path: '/features'
       fullPath: '/features'
       preLoaderRoute: typeof FeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -205,6 +319,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/users': {
+      id: '/dashboard/users'
+      path: '/users'
+      fullPath: '/dashboard/users'
+      preLoaderRoute: typeof DashboardUsersRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/me': {
+      id: '/dashboard/me'
+      path: '/me'
+      fullPath: '/dashboard/me'
+      preLoaderRoute: typeof DashboardMeRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/drafts': {
+      id: '/dashboard/drafts'
+      path: '/drafts'
+      fullPath: '/dashboard/drafts'
+      preLoaderRoute: typeof DashboardDraftsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/categories': {
+      id: '/dashboard/categories'
+      path: '/categories'
+      fullPath: '/dashboard/categories'
+      preLoaderRoute: typeof DashboardCategoriesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/blogs': {
+      id: '/dashboard/blogs'
+      path: '/blogs'
+      fullPath: '/dashboard/blogs'
+      preLoaderRoute: typeof DashboardBlogsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/admin-dashboard': {
+      id: '/dashboard/admin-dashboard'
+      path: '/admin-dashboard'
+      fullPath: '/dashboard/admin-dashboard'
+      preLoaderRoute: typeof DashboardAdminDashboardRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/admin-accounts': {
+      id: '/dashboard/admin-accounts'
+      path: '/admin-accounts'
+      fullPath: '/dashboard/admin-accounts'
+      preLoaderRoute: typeof DashboardAdminAccountsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/blog/$postId': {
       id: '/blog/$postId'
       path: '/blog/$postId'
@@ -215,12 +385,39 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashboardRouteChildren {
+  DashboardAdminAccountsRoute: typeof DashboardAdminAccountsRoute
+  DashboardAdminDashboardRoute: typeof DashboardAdminDashboardRoute
+  DashboardBlogsRoute: typeof DashboardBlogsRoute
+  DashboardCategoriesRoute: typeof DashboardCategoriesRoute
+  DashboardDraftsRoute: typeof DashboardDraftsRoute
+  DashboardMeRoute: typeof DashboardMeRoute
+  DashboardUsersRoute: typeof DashboardUsersRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAdminAccountsRoute: DashboardAdminAccountsRoute,
+  DashboardAdminDashboardRoute: DashboardAdminDashboardRoute,
+  DashboardBlogsRoute: DashboardBlogsRoute,
+  DashboardCategoriesRoute: DashboardCategoriesRoute,
+  DashboardDraftsRoute: DashboardDraftsRoute,
+  DashboardMeRoute: DashboardMeRoute,
+  DashboardUsersRoute: DashboardUsersRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   BlogsRoute: BlogsRoute,
   CategoriesRoute: CategoriesRoute,
   ContactRoute: ContactRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   FeaturesRoute: FeaturesRoute,
   LoginRoute: LoginRoute,
   WriteRoute: WriteRoute,

@@ -8,8 +8,9 @@ import {
 import { Blog } from '../../blogs/entities/blog.entity';
 
 export enum Role {
-  ADMIN = 'admin',
   USER = 'user',
+  ADMIN = 'admin',
+  SUPER_ADMIN = 'super_admin',
 }
 
 @Entity()

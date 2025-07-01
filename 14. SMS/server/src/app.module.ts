@@ -2,7 +2,6 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { LoggerMiddleware } from './logger.middleware';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProfileModule } from './profiles/profile.module';
-import { DatabaseModule } from './database/database.module';
 import { LogsModule } from './logs/logs.module';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { createKeyv, Keyv } from '@keyv/redis';
@@ -16,6 +15,13 @@ import { BlogsModule } from './blogs/blogs.module';
 import { CommentsModule } from './comments/comments.module';
 import { UsersModule } from './users/users.module';
 import { AdminsModule } from './admins/admins.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './users/entities/user.entity';
+import { Profile } from './profiles/entities/profile.entity';
+import { Blog } from './blogs/entities/blog.entity';
+import { Comment } from './comments/entities/comment.entity';
+import { Category } from './categories/entities/category.entity';
+import { Admin } from './admins/entities/admin.entity';
 
 @Module({
   imports: [
@@ -23,9 +29,21 @@ import { AdminsModule } from './admins/admins.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    ProfileModule,
-    DatabaseModule,
-    LogsModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.getOrThrow<string>('DB_HOST'),
+        port: parseInt(configService.getOrThrow<string>('DB_PORT')),
+        username: configService.getOrThrow<string>('DB_USERNAME'),
+        password: configService.getOrThrow<string>('DB_PASSWORD'),
+        database: configService.getOrThrow<string>('DB_NAME'),
+        entities: [User, Profile, Blog, Comment, Category, Admin],
+        synchronize: configService.getOrThrow<boolean>('DB_SYNC', true),
+        logging: configService.getOrThrow<boolean>('DB_LOGGING', false),
+      }),
+      inject: [ConfigService],
+    }),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -42,7 +60,6 @@ import { AdminsModule } from './admins/admins.module';
         };
       },
     }),
-    AuthModule,
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -54,6 +71,9 @@ import { AdminsModule } from './admins/admins.module';
         },
       ],
     }),
+    ProfileModule,
+    LogsModule,
+    AuthModule,
     CategoriesModule,
     BlogsModule,
     CommentsModule,

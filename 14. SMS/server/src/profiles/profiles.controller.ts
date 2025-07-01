@@ -35,19 +35,19 @@ export class ProfilesController {
     required: false,
     description: 'Filter profiles by email',
   })
-  @Roles(Role.ADMIN, Role.FACULTY)
+  @Roles(Role.ADMIN)
   @Get()
   findAll(@Query('email') email?: string) {
     return this.profilesService.findAll(email);
   }
 
-  @Roles(Role.ADMIN, Role.FACULTY, Role.STUDENT)
+  @Roles(Role.ADMIN, Role.USER)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.profilesService.findOne(id);
   }
 
-  @Roles(Role.ADMIN, Role.FACULTY, Role.STUDENT)
+  @Roles(Role.ADMIN, Role.USER)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,

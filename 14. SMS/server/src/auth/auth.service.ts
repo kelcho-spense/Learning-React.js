@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { CreateAuthDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Profile } from 'src/profiles/entities/profile.entity';
+import { Profile, Role } from 'src/profiles/entities/profile.entity';
 import { Repository } from 'typeorm';
 import * as Bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -13,7 +18,7 @@ export class AuthService {
     @InjectRepository(Profile) private profileRepository: Repository<Profile>,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   // Helper method to generates access and refresh tokens for the user
   private async getTokens(userId: number, email: string, role: string) {
@@ -98,7 +103,17 @@ export class AuthService {
     // save refresh token in the database
     await this.saveRefreshToken(foundUser.id, refreshToken);
     // return the tokens
-    return { accessToken, refreshToken };
+    return {
+      token: {
+        accessToken,
+        refreshToken,
+      },
+      user: {
+        id: foundUser.id,
+        email: foundUser.email,
+        role: foundUser.role, // Include role in the response
+      },
+    };
   }
 
   // Method to sign out the user
@@ -149,5 +164,40 @@ export class AuthService {
     await this.saveRefreshToken(foundUser.id, newRefreshToken);
     // return the new tokens
     return { accessToken, refreshToken: newRefreshToken };
+  }
+
+  // Method to register a new user
+  async register(registerDto: RegisterDto) {
+    // check if the user already exists
+    const existingUser = await this.profileRepository.findOne({
+      where: { email: registerDto.email },
+    });
+    if (existingUser) {
+      throw new ConflictException(
+        `User with email ${registerDto.email} already exists`,
+      );
+    }
+    // hash the password
+    const hashedPassword = await this.hashData(registerDto.password);
+    // create a new user
+    const newUser = this.profileRepository.create({
+      firstName: registerDto.firstName,
+      lastName: registerDto.lastName,
+      email: registerDto.email,
+      password: hashedPassword,
+      role: Role.USER, // Default role for new users
+    });
+    // save the user to the database
+    await this.profileRepository.save(newUser);
+    // generate tokens for the new user
+    const { accessToken, refreshToken } = await this.getTokens(
+      newUser.id,
+      newUser.email,
+      newUser.role,
+    );
+    // save refresh token in the database
+    await this.saveRefreshToken(newUser.id, refreshToken);
+    // return the tokens
+    return { accessToken, refreshToken };
   }
 }

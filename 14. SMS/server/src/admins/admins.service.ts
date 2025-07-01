@@ -86,4 +86,28 @@ export class AdminsService {
       inactiveUsers,
     };
   }
+
+  async activateAdmin(id: number): Promise<Profile> {
+    const admin = await this.profileRepository.findOne({
+      where: { id, role: Role.ADMIN },
+    });
+    if (!admin) {
+      throw new NotFoundException('Admin not found');
+    }
+
+    admin.isActive = true;
+    return this.profileRepository.save(admin);
+  }
+
+  async deactivateAdmin(id: number): Promise<Profile> {
+    const admin = await this.profileRepository.findOne({
+      where: { id, role: Role.ADMIN },
+    });
+    if (!admin) {
+      throw new NotFoundException('Admin not found');
+    }
+
+    admin.isActive = false;
+    return this.profileRepository.save(admin);
+  }
 }

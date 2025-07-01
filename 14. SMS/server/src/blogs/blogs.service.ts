@@ -42,8 +42,8 @@ export class BlogsService {
       .createQueryBuilder('blog')
       .leftJoinAndSelect('blog.author', 'author');
 
-    if (userRole === Role.ADMIN) {
-      // Admin can see all blogs
+    if (userRole === Role.ADMIN || userRole === Role.SUPER_ADMIN) {
+      // Admin and Super Admin can see all blogs
       return queryBuilder.getMany();
     } else {
       // Regular users can only see approved blogs or their own blogs
@@ -95,6 +95,7 @@ export class BlogsService {
     // Check if user can access this blog
     if (
       userRole !== Role.ADMIN &&
+      userRole !== Role.SUPER_ADMIN &&
       blog.status !== BlogStatus.APPROVED &&
       blog.authorId !== userId
     ) {
@@ -125,12 +126,20 @@ export class BlogsService {
     }
 
     // Check if user can update this blog
-    if (userRole !== Role.ADMIN && blog.authorId !== userId) {
+    if (
+      userRole !== Role.ADMIN &&
+      userRole !== Role.SUPER_ADMIN &&
+      blog.authorId !== userId
+    ) {
       throw new ForbiddenException('You can only update your own blogs');
     }
 
     // If user is updating their own blog and it was rejected, reset status to draft
-    if (userRole !== Role.ADMIN && blog.status === BlogStatus.REJECTED) {
+    if (
+      userRole !== Role.ADMIN &&
+      userRole !== Role.SUPER_ADMIN &&
+      blog.status === BlogStatus.REJECTED
+    ) {
       updateBlogDto.status = BlogStatus.DRAFT;
     }
 
@@ -191,7 +200,11 @@ export class BlogsService {
     }
 
     // Check if user can delete this blog
-    if (userRole !== Role.ADMIN && blog.authorId !== userId) {
+    if (
+      userRole !== Role.ADMIN &&
+      userRole !== Role.SUPER_ADMIN &&
+      blog.authorId !== userId
+    ) {
       throw new ForbiddenException('You can only delete your own blogs');
     }
 

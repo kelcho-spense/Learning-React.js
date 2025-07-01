@@ -37,13 +37,12 @@ export class CreateProfileDto {
   @ApiProperty({
     description: 'The role of the user in the system',
     enum: Role,
-    example: Role.STUDENT,
-    default: Role.GUEST,
+    example: Role.USER,
+    default: Role.USER,
   })
   @IsString()
   @IsEnum(Role, {
-    message:
-      'Role must be one of the following: student, faculty, administrator',
+    message: 'Role must be one of the following: user, admin',
   })
-  role: Role = Role.GUEST; // Default role set to GUEST
+  role: Role = Role.USER; // Default role set to USER
 }
