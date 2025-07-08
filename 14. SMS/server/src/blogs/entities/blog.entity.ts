@@ -29,13 +29,37 @@ export class Blog {
   content: string;
 
   @Column('text', { nullable: true })
-  excerpt: string;
+  summary: string;
 
   @Column({ type: 'enum', enum: BlogStatus, default: BlogStatus.DRAFT })
   status: BlogStatus;
 
   @Column('text', { nullable: true })
   adminReviewMessage: string;
+
+  @Column({ nullable: true })
+  publishedAt: Date;
+
+  @Column({ nullable: true })
+  category: string;
+
+  @Column({ nullable: true })
+  tags: string;
+
+  @Column({ default: 0 })
+  viewCount: number;
+
+  @Column()
+  authorId: number;
+
+  @OneToMany(() => Comment, (comment) => comment.blog)
+  comments: Relation<Comment[]>;
+
+  @ManyToOne(() => Profile, (profile) => profile.blogs, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'authorId' })
+  author: Relation<Profile>;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
@@ -46,25 +70,4 @@ export class Blog {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
-
-  @Column({ nullable: true })
-  publishedAt: Date;
-
-  @Column('simple-array', { nullable: true })
-  tags: string[];
-
-  @Column({ default: 0 })
-  viewCount: number;
-
-  @ManyToOne(() => Profile, (profile) => profile.blogs, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'authorId' })
-  author: Relation<Profile>;
-
-  @Column()
-  authorId: number;
-
-  @OneToMany(() => Comment, (comment) => comment.blog)
-  comments: Relation<Comment[]>;
 }

@@ -13,6 +13,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         // Map route segments to user-friendly titles
         const titleMap: Record<string, string> = {
             'dashboard': 'Dashboard',
+            'new-blog': 'Write Blog',
             'drafts': 'Drafts',
             'categories': 'Categories',
             'users': 'Users',

@@ -97,7 +97,7 @@ function RouteComponent() {
   })
 
   return (
-    <div className='flex items-center justify-center h-screen dark:bg-gray-900 bg-gray-100'>
+    <div className='flex items-center justify-center h-screen  dark:bg-gray-900 bg-gray-100'>
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>

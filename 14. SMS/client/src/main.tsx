@@ -8,6 +8,8 @@ import * as TanStackQueryProvider from './integrations/tanstack-query/root-provi
 import { routeTree } from './routeTree.gen'
 
 import './styles.css'
+// Import Quill styles
+import 'quill/dist/quill.snow.css'
 import reportWebVitals from './reportWebVitals.ts'
 import { ThemeProvider } from './components/theme-provider.tsx'
 import ToasterProvider from './components/toaster-provider.tsx'
@@ -39,7 +41,7 @@ if (rootElement && !rootElement.innerHTML) {
     <StrictMode>
       <TanStackQueryProvider.Provider>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-             <ToasterProvider />
+          <ToasterProvider />
           <RouterProvider router={router} />
         </ThemeProvider>
       </TanStackQueryProvider.Provider>

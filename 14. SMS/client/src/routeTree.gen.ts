@@ -20,6 +20,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardUsersRouteImport } from './routes/dashboard/users'
+import { Route as DashboardNewBlogRouteImport } from './routes/dashboard/new-blog'
 import { Route as DashboardMeRouteImport } from './routes/dashboard/me'
 import { Route as DashboardDraftsRouteImport } from './routes/dashboard/drafts'
 import { Route as DashboardCategoriesRouteImport } from './routes/dashboard/categories'
@@ -83,6 +84,11 @@ const DashboardUsersRoute = DashboardUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardNewBlogRoute = DashboardNewBlogRouteImport.update({
+  id: '/new-blog',
+  path: '/new-blog',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardMeRoute = DashboardMeRouteImport.update({
   id: '/me',
   path: '/me',
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/drafts': typeof DashboardDraftsRoute
   '/dashboard/me': typeof DashboardMeRoute
+  '/dashboard/new-blog': typeof DashboardNewBlogRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/drafts': typeof DashboardDraftsRoute
   '/dashboard/me': typeof DashboardMeRoute
+  '/dashboard/new-blog': typeof DashboardNewBlogRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard': typeof DashboardIndexRoute
 }
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/dashboard/categories': typeof DashboardCategoriesRoute
   '/dashboard/drafts': typeof DashboardDraftsRoute
   '/dashboard/me': typeof DashboardMeRoute
+  '/dashboard/new-blog': typeof DashboardNewBlogRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/dashboard/categories'
     | '/dashboard/drafts'
     | '/dashboard/me'
+    | '/dashboard/new-blog'
     | '/dashboard/users'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
@@ -217,6 +227,7 @@ export interface FileRouteTypes {
     | '/dashboard/categories'
     | '/dashboard/drafts'
     | '/dashboard/me'
+    | '/dashboard/new-blog'
     | '/dashboard/users'
     | '/dashboard'
   id:
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/dashboard/categories'
     | '/dashboard/drafts'
     | '/dashboard/me'
+    | '/dashboard/new-blog'
     | '/dashboard/users'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
@@ -333,6 +345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardUsersRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/new-blog': {
+      id: '/dashboard/new-blog'
+      path: '/new-blog'
+      fullPath: '/dashboard/new-blog'
+      preLoaderRoute: typeof DashboardNewBlogRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/me': {
       id: '/dashboard/me'
       path: '/me'
@@ -392,6 +411,7 @@ interface DashboardRouteChildren {
   DashboardCategoriesRoute: typeof DashboardCategoriesRoute
   DashboardDraftsRoute: typeof DashboardDraftsRoute
   DashboardMeRoute: typeof DashboardMeRoute
+  DashboardNewBlogRoute: typeof DashboardNewBlogRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
@@ -403,6 +423,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardCategoriesRoute: DashboardCategoriesRoute,
   DashboardDraftsRoute: DashboardDraftsRoute,
   DashboardMeRoute: DashboardMeRoute,
+  DashboardNewBlogRoute: DashboardNewBlogRoute,
   DashboardUsersRoute: DashboardUsersRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }

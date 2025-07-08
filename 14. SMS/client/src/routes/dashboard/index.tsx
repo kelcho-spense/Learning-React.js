@@ -13,7 +13,7 @@ function DashboardComponent() {
       <p className="mb-4">Use the navigation links to explore different sections.</p>
       <footer className="mt-8 pt-4 border-t">
         <p>Footer content goes here</p>
-        <p>&copy; 2023 Your Company</p>
+        <p>&copy; 2025 Your Company</p>
       </footer>
     </div>
   )

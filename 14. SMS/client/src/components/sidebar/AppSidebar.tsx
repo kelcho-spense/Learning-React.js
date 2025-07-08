@@ -9,7 +9,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Link } from "@tanstack/react-router"
-import { Home, CircleUserRound, Users, ChevronDown, LayoutDashboard, ShieldUser, Gauge, Hash, NotepadTextDashed, ChartColumnStacked } from "lucide-react"
+import { Home, CircleUserRound, Users, ChevronDown, LayoutDashboard, ShieldUser, Gauge, Hash, NotepadTextDashed, ChartColumnStacked, NotebookPen } from "lucide-react"
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "../ui/collapsible"
 
 // Menu items.
@@ -18,6 +18,11 @@ const items = [
         title: "Dashboard",
         url: "/dashboard",
         icon: Home,
+    },
+    {
+        title: "Write Blog",
+        url: "/dashboard/new-blog",
+        icon: NotebookPen,
     },
     {
         title: "Drafts",
@@ -42,6 +47,7 @@ const items = [
 ]
 export function AppSidebar() {
     return (
+        
         <Sidebar className="mt-17">
             <SidebarContent>
                 <SidebarGroup>
@@ -60,6 +66,7 @@ export function AppSidebar() {
                             ))}
                         </SidebarMenu>
                     </SidebarGroupContent>
+                
                     <Collapsible defaultOpen className="group/collapsible">
                         <SidebarGroup>
                             <SidebarGroupLabel asChild>
